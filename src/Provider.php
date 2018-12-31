@@ -5,14 +5,24 @@ namespace Peak\SDK\Wechat;
 trait Provider
 {
 
-	protected function registerWechatSdk ()
+
+	/**
+	 * 依赖注入 注册组件
+	 * */
+	protected function registerWechatSdk (array $config, $app='Laravel')
 	{
-		$this->app->singleton(
-			Core::class,
-			function (){
-				return new Core ();
-			}
-		);
+		switch ($app) {
+			case 'Laravel':
+				$this->app->singleton(
+					Core::class,
+					function () use (&$config) {
+						return new Core ($config);
+					}
+				);
+				break;
+		}
+
+
 	}
 
 }

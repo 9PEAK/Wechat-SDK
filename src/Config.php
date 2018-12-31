@@ -4,24 +4,26 @@ namespace Peak\SDK\Wechat;
 
 class Config
 {
-/*
-	protected static $app_id;
-	protected static $app_secret;
-	protected static $oauth_url;
-	protected static $nonce_str;
-	protected static $timestamp;
 
-	protected static $cookie;
-	protected static $cache_file;
-*/
 
-	const CONFIG = 'services.wechat.';
+	protected static $config = [
+		'app_id' => null,
+		'app_secret' => null,
+		'oauth_url' => null,
+
+		'timestamp' => null,
+
+		'cache_name' => null,
+		'cache_path' => null,
+		'cache_exp' => null,
+	];
+
+
 
 	static protected function config ($key, $val)
 	{
-		$key = self::CONFIG.$key;
-		$val && config()->set($key, $val);
-		return config($key);
+		$val && @self::$config[$key]=$val;
+		return @self::$config[$key];
 	}
 
 	/**
@@ -56,12 +58,12 @@ class Config
 	 * */
 	static function nonceStr($val=null)
 	{
-		return self::config('nonce_str', $val) ?: self::config('nonce_str', \Peak\Tool\Str::random(6));
+		return self::config('nonce_str', $val) ?: self::config('nonce_str', \Peak\Plugin\Str::random(6));
 	}
 
 
 	/**
-	 * 获取设置随机字符串
+	 * 获取/设置时间戳
 	 * */
 	static function timestamp($val=null)
 	{
@@ -70,31 +72,38 @@ class Config
 
 
 	/**
-	 * 获取设置随机字符串
+	 * 获取设置缓存类型
 	 * */
-	static function cacheType($val=null)
+	/*static function cacheType($val=null)
 	{
 		return self::config('cache_type', $val) ?: self::config('cache_type', time());
-	}
+	}*/
 
 
 	/**
-	 * 获取设置缓存名
+	 * 获取/设置设置缓存名
 	 * */
-	static function cacheName()
+	static function cacheName($val=null)
 	{
-		return self::config('cache_name', null)
-				?: !self::appId() ?: self::config('cache_name', '9peak-wechat-cookie-'.self::appId());
+		return self::config('cache_name', $val) ?: self::config('cache_name', 'wechat-session-'.self::appId().'.json');
 	}
 
 
 	/**
-	 * 获取|设置缓存文件存储文件
+	 * 获取|设置缓存文件存储位置
+	 * */
+	static function cachePath($val=null)
+	{
+		return self::config('cache_path', $val);
+	}
+
+
+	/**
+	 * 获取缓存文件（绝对路径）
 	 * */
 	static function cacheFile()
 	{
-		return self::config('cache_file', null)
-				?: self::config('cache_file', !self::cacheName() ?: storage_path('framework/cache/').self::cacheName().'.json');
+		return self::cachePath().self::cacheName();
 	}
 
 
@@ -105,10 +114,6 @@ class Config
 	{
 		return self::config('cache_exp', $val);
 	}
-
-
-
-
 
 
 

@@ -6,10 +6,14 @@ class Core extends SDK
 {
 
 
-	function __construct($appId=null, $appSecret=null, $cacheType=null, $cacheExp=666)
+	function __construct(array $config)
 	{
-		parent::__construct($appId, $appSecret);
-		Config::cacheExp($cacheExp);
+		parent::__construct($config['app_id'], $config['app_secret']);
+
+		Config::oauthUrl($config['oauth_url']);
+		Config::cacheName($config['cache_name']);
+		Config::cachePath($config['cache_path']);
+		Config::cacheExp($config['cache_exp']);
 	}
 
 

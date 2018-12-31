@@ -5,7 +5,7 @@ namespace Peak\SDK\Wechat;
 class SDK
 {
 
-	use \App\Services\Debuger;
+	use \Peak\Plugin\Debuger;
 
 	private static $http;
 
@@ -21,7 +21,7 @@ class SDK
 
 		Config::appId($appId);
 		Config::appSecret($appSecret);
-		self::$http = new \Curl\Curl();
+//		self::$http = new \Curl\Curl();
 	}
 
 	const DOMAIN = 'https://api.weixin.qq.com/';

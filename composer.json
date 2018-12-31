@@ -10,7 +10,9 @@
         }
     ],
     "require": {
-        "php": ">= 5.3"
+        "php": ">= 5.3",
+//        "php-curl-class/php-curl-class": "7.3",
+        "9peak/php-plugin": "dev-master"
     },
     "require-dev": {},
     "autoload": {
