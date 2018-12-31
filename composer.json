@@ -1,0 +1,23 @@
+{
+    "name": "9peak/wechat-sdk",
+    "description": "PHP Wechat SDK, 微信sdk开发包",
+    "license": "MIT",
+    "keywords": ["9peak", "wechat", "wechat sdk", "sdk"],
+    "authors": [
+        {
+            "name": "Kane Young / 杨祥凯",
+            "email": "52653784@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">= 5.3"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Peak\\SDK\\Wechat": "src"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": false
+}
