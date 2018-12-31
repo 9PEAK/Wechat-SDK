@@ -16,7 +16,7 @@
     "require-dev": {},
     "autoload": {
         "psr-4": {
-            "Peak\\SDK\\Wechat": "src"
+            "Peak\\SDK\\Wechat\\": "src"
         }
     },
     "minimum-stability": "dev",
