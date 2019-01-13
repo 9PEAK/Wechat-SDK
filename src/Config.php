@@ -5,7 +5,6 @@ namespace Peak\SDK\Wechat;
 class Config
 {
 
-
 	protected static $config = [
 		'app_id' => null,
 		'app_secret' => null,

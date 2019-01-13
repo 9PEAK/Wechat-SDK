@@ -74,18 +74,14 @@ class Core extends SDK
 		}
 
 		// 接口获取
-		$res = $this->reqAccessToken();
-		if (@$res->errcode) {
-			return self::debug($res);
+		if ($res=$this->reqAccessToken()) {
+			self::save_cache([
+				'access_token' => $res->access_token,
+				'expires_in' => Config::timestamp()+Config::cacheExp()
+			]);
+			return $res->access_token;
 		}
 
-		self::save_cache([
-			'access_token' => $res->access_token,
-			'expires_in' => Config::timestamp()+Config::cacheExp()
-		]);
-//		echo 777;
-//		print_r($res);exit;
-		return $res->access_token;
 	}
 
 
@@ -101,8 +97,10 @@ class Core extends SDK
 		if (!$ticket) {
 			$token = $this->getAccessToken();
 			if (!$token) return;
+
 			$res = $this->reqJsTicket($token);
-			if (!$res || @$res->errcode) return self::debug($res);
+			if (!$res) return;
+
 			$ticket = $res->ticket;
 			self::save_cache('ticket', $ticket);
 		}

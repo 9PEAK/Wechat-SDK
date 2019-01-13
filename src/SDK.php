@@ -13,7 +13,7 @@ class SDK
 	{
 		$res = file_get_contents($url);
 		$res = json_decode($res);
-		return @$res->errcode ? self::debug($res) : $res;
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
 	function __construct($appId=null, $appSecret=null)
@@ -39,9 +39,10 @@ class SDK
 	{
 		$url = str_replace('{appid}', Config::appId(), self::URL_ACCESS_TOKEN);
 		$url = str_replace('{appsecret}', Config::appSecret(), $url);
-
-		$res = json_decode(file_get_contents($url));
-		return @$res->errcode ? self::debug($res) : $res;
+		$res = self::http_get($url);
+		return $res;
+//		$res = json_decode(file_get_contents($url));
+//		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -53,10 +54,8 @@ class SDK
 	 * */
 	public function reqJsTicket ($accessToken)
 	{
-		$res = json_decode(
-			file_get_contents(self::URL_JS_TICKET .$accessToken)
-		);
-		return @$res->errcode ? self::debug($res) : $res;
+		$res = self::http_get(file_get_contents(self::URL_JS_TICKET .$accessToken));
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
 
@@ -127,9 +126,8 @@ class SDK
 		$url = str_replace('{appid}', Config::appId(), self::URL_OAUTH_ACCESS_TOKEN);
 		$url = str_replace('{secret}', Config::appSecret(), $url);
 		$url = str_replace('{code}', $code, $url);
-		$res = file_get_contents($url);
-		$res = json_decode($res);
-		return @$res->errcode ? self::debug($res) : $res;
+		$res = self::http_get($url);
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
 
@@ -148,9 +146,8 @@ class SDK
 		foreach ($replace as $key=>&$val) {
 			$url = str_replace('{'.$key.'}', $val, $url);
 		}
-		$res = file_get_contents($url);
-		$res = json_decode($res);
-		return @$res->errcode ? self::debug($res) : $res;
+		$res = self::http_get($url);
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
 
