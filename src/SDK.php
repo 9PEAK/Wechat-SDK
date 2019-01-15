@@ -88,10 +88,10 @@ class SDK
 	public function makeJsConfig ($url, $jsTicket)
 	{
 		return [
-			'appid' => Config::appId() ,
+			'appId' => Config::appId() ,
 			'timestamp' => Config::timestamp(),
-			'nonce_str' => Config::nonceStr(),
-			'js_signature' => $this->signJsConfig($url, $jsTicket)
+			'nonceStr' => Config::nonceStr(),
+			'signature' => $this->signJsConfig($url, $jsTicket)
 		];
 	}
 
