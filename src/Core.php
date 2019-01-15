@@ -6,6 +6,8 @@ class Core extends SDK
 {
 
 
+	private static $cache;
+
 	function __construct(array $config)
 	{
 		parent::__construct($config['app_id'], $config['app_secret']);
@@ -14,6 +16,8 @@ class Core extends SDK
 		Config::cacheName($config['cache_name']);
 		Config::cachePath($config['cache_path']);
 		Config::cacheExp($config['cache_exp']);
+
+		self::$cache = new \Peak\Plugin\FileCache(Config::cacheFile());
 	}
 
 
@@ -22,14 +26,16 @@ class Core extends SDK
 	/**
 	 * 获取缓存
 	 * @param $key string. the specific key you want
-	 * @return string|object, return the value of the key you want, otherwise return all the cache when the key param is null.
+	 * @return string|object, return the value of the specific key, otherwise return all the cache when the key param is null.
 	 */
 	private static function get_cache ($key=null)
 	{
-		$file = Config::cacheFile();
-		$file = file_exists($file) ? file_get_contents($file) : null;
-		$file = json_decode($file ?: '{}');
-		return $key ? (@$file->expires_in>=Config::timestamp() ? @$file->$key : null) : $file;
+		$dat = self::$cache->content();
+		if ($dat===false) {
+			return self::debug(self::$cache->debug()->getMessage());
+		}
+		$dat = json_decode($dat ?: '{}');
+		return $key ? (@$dat->expires_in>=Config::timestamp() ? @$dat->$key : null) : $dat;
 	}
 
 
@@ -50,12 +56,8 @@ class Core extends SDK
 				$dat[$k]= $val;
 			}
 		}
-		$file = Config::cacheFile();
-		$res = file_put_contents($file, json_encode($dat));
-		if (is_executable($file)) {
-			@chmod($file, 0660);
-		}
-		return $res;
+		$res = self::$cache->content($dat);
+		return $res ?: self::debug(self::$cache->debug()->getMessage());
 	}
 
 
