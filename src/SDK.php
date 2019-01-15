@@ -54,7 +54,7 @@ class SDK
 	 * */
 	public function reqJsTicket ($accessToken)
 	{
-		$res = self::http_get(file_get_contents(self::URL_JS_TICKET .$accessToken));
+		$res = self::http_get(self::URL_JS_TICKET .$accessToken);
 		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
