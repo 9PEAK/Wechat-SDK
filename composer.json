@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">= 5.3",
-        "9peak/php-plugin": "^1.1"
+        "9peak/php-plugin": "^1.1.6"
     },
     "require-dev": {},
     "autoload": {
