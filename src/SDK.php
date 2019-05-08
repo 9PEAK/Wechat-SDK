@@ -21,7 +21,7 @@ class SDK
 
 		Config::appId($appId);
 		Config::appSecret($appSecret);
-//		self::$http = new \Curl\Curl();
+		self::$http = new \Curl\Curl();
 	}
 
 	const DOMAIN = 'https://api.weixin.qq.com/';
@@ -162,6 +162,32 @@ class SDK
 		$url = str_replace('ACCESS_TOKEN', $accessToken, self::URL_MEDIA);
 		$url = str_replace('MEDIA_ID', $mediaId, $url);
 		return $returnUrl ? $url :self::http_get($url);
+	}
+
+
+
+
+	/**
+	 * 客服·发送文字消息
+	 * @param $openid string
+	 * @param $msg string
+	 * @param $accessToken string
+	 * */
+	const URL_CUSTOMER_SERVICE_MSG = self::DOMAIN.'cgi-bin/message/custom/send?access_token=';
+	public static function sendCustomerServiceText ($openid, $msg, $accessToken)
+	{
+		$res = self::$http->post(
+			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
+			[
+				'touser' => $openid,
+				'msgtype' => 'text',
+				'text' => [
+					'content' => $msg
+				],
+			]
+		);
+
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
 
