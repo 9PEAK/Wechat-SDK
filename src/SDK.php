@@ -66,8 +66,6 @@ class SDK
 		$url = str_replace('{appsecret}', Config::appSecret(), $url);
 		$res = self::http_get($url);
 		return $res;
-//		$res = json_decode(file_get_contents($url));
-//		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -190,7 +188,7 @@ class SDK
 	}
 
 
-
+	const URL_CUSTOMER_SERVICE_MSG = self::DOMAIN.'cgi-bin/message/custom/send?access_token=';
 
 	/**
 	 * 客服·发送文字消息
@@ -198,7 +196,6 @@ class SDK
 	 * @param $msg string
 	 * @param $accessToken string
 	 * */
-	const URL_CUSTOMER_SERVICE_MSG = self::DOMAIN.'cgi-bin/message/custom/send?access_token=';
 	public static function sendCustomerServiceText ($openid, $msg, $accessToken)
 	{
 		return self::http_post(
@@ -209,6 +206,80 @@ class SDK
 				'text' => [
 					'content' => $msg
 				],
+			]
+		);
+	}
+
+
+	/**
+	 * 客服·发送图片消息
+	 * @param $openid string
+	 * @param $mediaId string
+	 * @param $accessToken string
+	 * */
+	public static function sendCustomerServiceImg ($openid, $mediaId, $accessToken)
+	{
+		return self::http_post(
+			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
+			[
+				'touser' => $openid,
+				'msgtype' => 'image',
+				'image' => [
+					'media_id' => $mediaId
+				],
+			]
+		);
+	}
+
+
+
+	/**
+	 * 客服·发送图片消息
+	 * @param $openid string
+	 * @param $mediaId string
+	 * @param $accessToken string
+	 * */
+	public static function sendCustomerServiceVoice ($openid, $mediaId, $accessToken)
+	{
+		return self::http_post(
+			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
+			[
+				'touser' => $openid,
+				'msgtype' => 'voice',
+				'voice' => [
+					'media_id' => $mediaId
+				],
+			]
+		);
+	}
+
+
+	/**
+	 * 客服·发送视频消息
+	 * @param $openid string
+	 * @param $video array 包含media_id素材id、thumb_media_id素材预览id、title标题、description描述四项属性。
+	 * @param $accessToken string
+	 * */
+	public static function sendCustomerServiceVideo ($openid, array $video, $accessToken)
+	{
+		$tpl = [
+			'media_id',
+			'thumb_media_id',
+			'title',
+			'description',
+		];
+		foreach ($tpl as $key) {
+			if (!array_key_exists($key, $video)) {
+				return self::debug('参数“'.$key.'”缺失。');
+			}
+		}
+
+		return self::http_post(
+			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
+			[
+				'touser' => $openid,
+				'msgtype' => 'video',
+				'video' => $video,
 			]
 		);
 	}
