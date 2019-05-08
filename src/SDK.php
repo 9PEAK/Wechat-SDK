@@ -198,7 +198,7 @@ class SDK
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($curl, CURLOPT_POST, 1);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		$result = curl_exec($curl);
 		if (curl_errno($curl)) {
