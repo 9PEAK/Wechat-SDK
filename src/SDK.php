@@ -176,7 +176,7 @@ class SDK
 	const URL_CUSTOMER_SERVICE_MSG = self::DOMAIN.'cgi-bin/message/custom/send?access_token=';
 	public static function sendCustomerServiceText ($openid, $msg, $accessToken)
 	{
-		$res = self::$http->post(
+		$res = self::http_post(
 			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
 			[
 				'touser' => $openid,
@@ -188,6 +188,24 @@ class SDK
 		);
 
 		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+	}
+
+
+	protected static function http_post($url, $dat)
+	{
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($curl, CURLOPT_POST, 1);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat));
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$result = curl_exec($curl);
+		if (curl_errno($curl)) {
+			return 'Errno'.curl_error($curl);
+		}
+		curl_close($curl);
+		return $result;
 	}
 
 
