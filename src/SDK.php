@@ -22,16 +22,20 @@ class SDK
 	 * post请求
 	 * @param $url string
 	 * @param $dat mixed 允许是字符串、数组、对象，函数内部将自动转化
-	 * @
+	 * @param $file boolean 是否上传文件，默认false。
 	 * */
-	protected static function http_post($url, $dat)
+	protected static function http_post($url, $dat, $file=false)
 	{
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($curl, CURLOPT_POST, 1);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
+		if ($file) {
+			curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($dat) ? $dat : json_decode($dat, 1));
+		} else {
+			curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
+		}
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		$res = curl_exec($curl);
 		if (curl_errno($curl)) {
@@ -175,14 +179,43 @@ class SDK
 
 
 
+	###### 临时素材模块
+
+	const URL_MEDIA = self::DOMAIN.'cgi-bin/media/upload?access_token=';
+
+
+	/**
+	 * 上传临时素材
+	 * @param $accessToken string
+	 * @param $type string 素材类型
+	 * @param $file string 文件的绝对路径
+	 * */
+	public static function uploadMedia ($accessToken, $type, $file)
+	{
+		$url = self::URL_MEDIA.$accessToken;
+		$url.= '&type='.$type;
+		return self::http_post(
+			$url,
+			[
+				'media' => new \CURLFile($file)
+			],
+			true
+		);
+	}
+
+
+
 
 	/**
 	 * 获取临时素材
+	 * @param $accessToken string
+	 * @param $mediaId string 素材id
+	 * @param $returnUrl string 是否返回URL
 	 * */
-	const URL_MEDIA = 'https://api.weixin.qq.com/cgi-bin/media/get?access_token=ACCESS_TOKEN&media_id=MEDIA_ID';
+	const URL_MEDIA_GET = 'https://api.weixin.qq.com/cgi-bin/media/get?access_token=ACCESS_TOKEN&media_id=MEDIA_ID';
 	public static function reqMedia ($accessToken, $mediaId, $returnUrl)
 	{
-		$url = str_replace('ACCESS_TOKEN', $accessToken, self::URL_MEDIA);
+		$url = str_replace('ACCESS_TOKEN', $accessToken, self::URL_MEDIA_GET);
 		$url = str_replace('MEDIA_ID', $mediaId, $url);
 		return $returnUrl ? $url :self::http_get($url);
 	}
