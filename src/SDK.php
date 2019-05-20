@@ -436,13 +436,13 @@ class SDK
 	 * */
 	public function sendTemplateMsg ($accessToken, $openid, $tplId, array $dat)
 	{
-		$dat = array_merge([
+		$dat = array_merge(
 			[
 				'touser' => $openid,
 				'template_id' => $tplId,
 			],
 			$dat
-		]);
+		);
 		\Log::info(urldecode(json_encode($dat)));
 		return self::http(
 			'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$accessToken,
