@@ -5,48 +5,6 @@ namespace Peak\SDK\Wechat;
 class SDK
 {
 
-	# start 废弃
-
-	protected static function http_response ($res)
-	{
-		$res = json_decode($res);
-		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
-	}
-
-	protected static function http_get($url)
-	{
-		return self::http_response(file_get_contents($url));
-	}
-
-	/**
-	 * post请求
-	 * @param $url string
-	 * @param $dat mixed 允许是字符串、数组、对象，函数内部将自动转化
-	 * @param $file boolean 是否上传文件，默认false。
-	 * */
-	protected static function http_post($url, $dat, $file=false)
-	{
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_POST, 1);
-		if ($file) {
-			curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($dat) ? $dat : json_decode($dat, 1));
-		} else {
-			curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
-		}
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		$res = curl_exec($curl);
-		if (curl_errno($curl)) {
-			return self::debug('Error: '.curl_error($curl));
-		}
-		curl_close($curl);
-		return self::http_response($res);
-	}
-
-
-	# end 废弃
 
 	use \Peak\Plugin\Debuger;
 
@@ -74,7 +32,7 @@ class SDK
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			$res = curl_exec($curl);
 			if (curl_errno($curl)) {
-				return self::debug('Error: '.curl_error($curl));
+				return self::debug('Response: '.curl_error($curl));
 			}
 			curl_close($curl);
 		} else {
@@ -82,7 +40,7 @@ class SDK
 		}
 
 		$res = json_decode($res);
-		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -121,7 +79,7 @@ class SDK
 	public function reqJsTicket ($accessToken)
 	{
 		$res = self::http(self::URL_JS_TICKET .$accessToken);
-		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -137,7 +95,7 @@ class SDK
 			'timestamp' => Config::timestamp(),
 			'url' => $url,
 		];
-//		print_r($param);exit;
+
 		foreach ( $param as $k=>&$v ) {
 			$v = $k.'='.$v ;
 		}
@@ -193,7 +151,7 @@ class SDK
 		$url = str_replace('{secret}', Config::appSecret(), $url);
 		$url = str_replace('{code}', $code, $url);
 		$res = self::http($url);
-		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -213,7 +171,7 @@ class SDK
 			$url = str_replace('{'.$key.'}', $val, $url);
 		}
 		$res = self::http($url);
-		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+		return @$res->errcode ? self::debug($res) : $res;
 	}
 
 
@@ -342,7 +300,7 @@ class SDK
 		];
 		foreach ($tpl as $key) {
 			if (!array_key_exists($key, $video)) {
-				return self::debug('参数“'.$key.'”缺失。');
+				return self::debug('Request: 参数“'.$key.'”缺失。');
 			}
 		}
 

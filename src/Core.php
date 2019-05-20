@@ -6,8 +6,6 @@ class Core extends SDK
 {
 
 
-	private static $cache;
-
 	function __construct(array $config)
 	{
 		parent::__construct($config['app_id'], $config['app_secret']);
@@ -21,18 +19,31 @@ class Core extends SDK
 	}
 
 
+	private static $cache;
 
 
 	/**
-	 * 获取缓存
-	 * @param $key string. the specific key you want
-	 * @return string|object, return the value of the specific key, otherwise return all the cache when the key param is null.
-	 */
-	private static function get_cache ($key=null)
+	 * 获取/设置缓存
+	 * @param $key mixed 默认空，表示获取所有缓存数据，否则如果$key为string，则表示获取指定key的值；如果传入的$key是数组，则表示存储数据，仅更新传入的数据。
+	 * @return mixed|false 异常时返回false，否则返回数据
+	 * */
+	private static function cache ($key=null)
 	{
+		# 存储缓存
+		if (is_array($key)||is_object($key)) {
+			$dat = self::{__FUNCTION__}();
+
+			if ($dat===false) {
+				return false;
+			}
+
+			return self::$cache->content(array_merge((array)$dat, (array)$key)) ?: self::debug(self::$cache->debug());
+		}
+
+		# 获取缓存
 		$dat = self::$cache->content();
 		if ($dat===false) {
-			return self::debug(self::$cache->debug()->getMessage());
+			return self::debug(self::$cache->debug());
 		}
 		$dat = json_decode($dat ?: '{}');
 		return $key ? (@$dat->expires_in>=Config::timestamp() ? @$dat->$key : null) : $dat;
@@ -40,27 +51,7 @@ class Core extends SDK
 
 
 
-	/**
-	 * 保存缓存
-	 * @param $key string|array, the specific key you want to save, if it's a array , all the key,value will be saved
-	 * @param $val mixed|null, thg value for key, if key is an array, it will be ignored.
-	 * */
-	private static function save_cache ($key, $val=null)
-	{
-		if (is_string($key)) {
-			$dat = self::get_cache();
-			$dat->$key = $val;
-		} else {
-			$dat = [];
-			foreach ($key as $k=>&$val) {
-				$dat[$k]= $val;
-			}
-		}
-		$res = self::$cache->content($dat);
-		return $res ?: self::debug(self::$cache->debug()->getMessage());
-	}
-
-
+	protected $token, $ticket;
 
 
 	/**
@@ -71,13 +62,13 @@ class Core extends SDK
 	public function getAccessToken()
 	{
 		// 缓存获取
-		if ($token=self::get_cache('access_token')) {
+		if ($token=self::cache('access_token')) {
 			return $token;
 		}
 
 		// 接口获取
 		if ($res=$this->reqAccessToken()) {
-			self::save_cache([
+			self::cache([
 				'access_token' => $res->access_token,
 				'expires_in' => Config::timestamp()+Config::cacheExp()
 			]);
@@ -95,7 +86,7 @@ class Core extends SDK
 	 * */
 	public function getJsConfig ($url)
 	{
-		$ticket = self::get_cache('ticket');
+		$ticket = self::cache('ticket');
 		if (!$ticket) {
 			$token = $this->getAccessToken();
 			if (!$token) return;
@@ -104,7 +95,7 @@ class Core extends SDK
 			if (!$res) return;
 
 			$ticket = $res->ticket;
-			self::save_cache('ticket', $ticket);
+			self::cache('ticket', $ticket);
 		}
 		return $this->makeJsConfig($url, $ticket);
 	}
