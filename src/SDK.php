@@ -5,7 +5,7 @@ namespace Peak\SDK\Wechat;
 class SDK
 {
 
-	use \Peak\Plugin\Debuger;
+	# start 废弃
 
 	protected static function http_response ($res)
 	{
@@ -45,6 +45,45 @@ class SDK
 		return self::http_response($res);
 	}
 
+
+	# end 废弃
+
+	use \Peak\Plugin\Debuger;
+
+
+	/**
+	 * HTTP请求
+	 * @param $url string 请求url地址
+	 * @param $post mixed post请求参数，默认为空，表示get请求
+	 * @param $formData bool 是否是FormData类型数据，true时通常用于传输文件
+	 * @return
+	 * */
+	protected static function http ($url, $post=null, $formData=false)
+	{
+		if ($post) {
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+			curl_setopt($curl, CURLOPT_POST, 1);
+			if ($formData) {
+				curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($dat) ? $dat : json_decode($dat, 1));
+			} else {
+				curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
+			}
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			$res = curl_exec($curl);
+			if (curl_errno($curl)) {
+				return self::debug('Error: '.curl_error($curl));
+			}
+			curl_close($curl);
+		} else {
+			$res = file_get_contents($url);
+		}
+
+		$res = json_decode($res);
+		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
+	}
 
 
 	function __construct($appId=null, $appSecret=null)
@@ -194,7 +233,7 @@ class SDK
 	{
 		$url = self::URL_MEDIA.$accessToken;
 		$url.= '&type='.$type;
-		return self::http_post(
+		return self::http(
 			$url,
 			[
 				'media' => new \CURLFile($file)
@@ -231,7 +270,7 @@ class SDK
 	 * */
 	public static function sendCustomerServiceText ($openid, $msg, $accessToken)
 	{
-		return self::http_post(
+		return self::http(
 			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
 			[
 				'touser' => $openid,
@@ -252,7 +291,7 @@ class SDK
 	 * */
 	public static function sendCustomerServiceImg ($openid, $mediaId, $accessToken)
 	{
-		return self::http_post(
+		return self::http(
 			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
 			[
 				'touser' => $openid,
@@ -274,7 +313,7 @@ class SDK
 	 * */
 	public static function sendCustomerServiceVoice ($openid, $mediaId, $accessToken)
 	{
-		return self::http_post(
+		return self::http(
 			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
 			[
 				'touser' => $openid,
@@ -307,7 +346,7 @@ class SDK
 			}
 		}
 
-		return self::http_post(
+		return self::http(
 			self::URL_CUSTOMER_SERVICE_MSG.$accessToken,
 			[
 				'touser' => $openid,
@@ -405,7 +444,7 @@ class SDK
 			$dat
 		]);
 		\Log::info(urldecode(json_encode($dat)));
-		return self::http_post(
+		return self::http(
 			'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$accessToken,
 			urldecode(json_encode($dat))
 		);
