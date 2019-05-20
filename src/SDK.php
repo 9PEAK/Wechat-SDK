@@ -404,6 +404,7 @@ class SDK
 			],
 			$dat
 		]);
+		\Log::info($dat);
 		return self::http_post(
 			'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$accessToken,
 			$dat
