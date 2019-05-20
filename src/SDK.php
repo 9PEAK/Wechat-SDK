@@ -348,7 +348,7 @@ class SDK
 	public function setTemplateMsgContent (array &$dat, $key, $val, $color='')
 	{
 		$dat['data'][$key] = [
-			'value' => $val,
+			'value' => urlencode($val),
 			'color' => $color,
 		];
 		return $this;
@@ -404,10 +404,10 @@ class SDK
 			],
 			$dat
 		]);
-		\Log::info($dat);
+		\Log::info(urldecode(json_encode($dat)));
 		return self::http_post(
 			'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$accessToken,
-			$dat
+			urldecode(json_encode($dat))
 		);
 	}
 
