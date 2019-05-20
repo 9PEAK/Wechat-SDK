@@ -319,4 +319,97 @@ class SDK
 
 
 
+	### 消息模板
+
+	const URL_TEMPLATE_MSG = 'https://api.weixin.qq.com/cgi-bin/template/';
+
+
+
+	/**
+	 * 获取模板列表
+	 * @param $accessToken string
+	 * */
+	public function getAllTemplateMsg ($accessToken)
+	{
+		return self::http_get(self::URL_TEMPLATE_MSG.'get_all_private_template?access_token='.$accessToken);
+	}
+
+
+
+
+	/**
+	 * 设置模板消息内容明细
+	 * @param $dat array 消息模板参数集
+	 * @param $key string 参数名
+	 * @param $val string 参数值
+	 * @param $color string 参数显示颜色，默认空字符串表示不设置颜色
+	 * @return $this
+	 * */
+	public function setTemplateMsgContent (array &$dat, $key, $val, $color='')
+	{
+		$dat['data'][$key] = [
+			'value' => $val,
+			'color' => $color,
+		];
+		return $this;
+	}
+
+
+
+	/**
+	 * 设置模板消息关联的小程序
+	 * @param $dat array 消息模板参数集
+	 * @param $id string 小程序appid
+	 * @param $path string 小程序路由url
+	 * @return $this
+	 * */
+	public function setTemplateMsgMiniprogram (array &$dat, $id, $path)
+	{
+		$dat['miniprogram'] = [
+			'appid' => $id,
+			'pagepath' => $path,
+		];
+		return $this;
+	}
+
+
+	/**
+	 * 模板消息参数 设置url
+	 * @param $dat array 消息模板参数集
+	 * @param $url string 跳转url
+	 * @return $this
+	 * */
+	public function setTemplateMsgUrl (array &$dat, $url)
+	{
+		$dat['url'] = $url;
+		return $this;
+	}
+
+
+
+	/**
+	 * 发送模板消息
+	 * @param $accessToken string
+	 * @param $openid string
+	 * @param $tplId string 模板id
+	 * @param $dat array 消息内容
+	 *
+	 * */
+	public function sendTemplateMsg ($accessToken, $openid, $tplId, array $dat)
+	{
+		$dat = array_merge([
+			[
+				'touser' => $openid,
+				'template_id' => $tplId,
+			],
+			$dat
+		]);
+		return self::http_post(
+			'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$accessToken,
+			$dat
+		);
+	}
+
+
+
 }
