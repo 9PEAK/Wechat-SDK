@@ -67,9 +67,9 @@ class SDK
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 			curl_setopt($curl, CURLOPT_POST, 1);
 			if ($formData) {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($dat) ? $dat : json_decode($dat, 1));
+				curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($post) ? $post : json_decode($post, 1));
 			} else {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($dat) ? $dat : json_encode($dat, JSON_UNESCAPED_UNICODE));
+				curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE));
 			}
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			$res = curl_exec($curl);
@@ -107,7 +107,7 @@ class SDK
 	{
 		$url = str_replace('{appid}', Config::appId(), self::URL_ACCESS_TOKEN);
 		$url = str_replace('{appsecret}', Config::appSecret(), $url);
-		$res = self::http_get($url);
+		$res = self::http($url);
 		return $res;
 	}
 
@@ -120,7 +120,7 @@ class SDK
 	 * */
 	public function reqJsTicket ($accessToken)
 	{
-		$res = self::http_get(self::URL_JS_TICKET .$accessToken);
+		$res = self::http(self::URL_JS_TICKET .$accessToken);
 		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
@@ -192,7 +192,7 @@ class SDK
 		$url = str_replace('{appid}', Config::appId(), self::URL_OAUTH_ACCESS_TOKEN);
 		$url = str_replace('{secret}', Config::appSecret(), $url);
 		$url = str_replace('{code}', $code, $url);
-		$res = self::http_get($url);
+		$res = self::http($url);
 		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
@@ -212,7 +212,7 @@ class SDK
 		foreach ($replace as $key=>&$val) {
 			$url = str_replace('{'.$key.'}', $val, $url);
 		}
-		$res = self::http_get($url);
+		$res = self::http($url);
 		return @$res->errcode ? self::debug($res->errmsg, $res->errcode) : $res;
 	}
 
@@ -256,7 +256,7 @@ class SDK
 	{
 		$url = str_replace('ACCESS_TOKEN', $accessToken, self::URL_MEDIA_GET);
 		$url = str_replace('MEDIA_ID', $mediaId, $url);
-		return $returnUrl ? $url :self::http_get($url);
+		return $returnUrl ? $url :self::http($url);
 	}
 
 
@@ -370,7 +370,7 @@ class SDK
 	 * */
 	public function getAllTemplateMsg ($accessToken)
 	{
-		return self::http_get(self::URL_TEMPLATE_MSG.'get_all_private_template?access_token='.$accessToken);
+		return self::http(self::URL_TEMPLATE_MSG.'get_all_private_template?access_token='.$accessToken);
 	}
 
 
