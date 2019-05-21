@@ -218,7 +218,7 @@ class Core
 	 * @return object|false
 	 * */
 	const URL_OAUTH_ACCESS_TOKEN = self::URL.'sns/oauth2/access_token?appid={appid}&secret={secret}&code={code}&grant_type=authorization_code';
-	public static function reqOauthAccessToken ($code)
+	public static function getOauthAccessToken ($code)
 	{
 		$url = str_replace('{appid}', Config::appId(), self::URL_OAUTH_ACCESS_TOKEN);
 		$url = str_replace('{secret}', Config::appSecret(), $url);
