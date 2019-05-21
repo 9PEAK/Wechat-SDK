@@ -47,7 +47,7 @@ class Core
 			return self::debug(self::$cache->debug());
 		}
 		$dat = json_decode($dat ?: '{}');
-		return $key ? (@$dat->expires_in>=Config::timestamp() ? @$dat->$key : null) : $dat;
+		return @$dat->expires_in>=time() ? ($key ? @$dat->$key : $dat) : (object)[];
 	}
 
 
@@ -103,8 +103,7 @@ class Core
 	{
 
 		// 内置内存获取
-		if ($this->access_token && $this->expires_in<=time()) {
-			\Log::info('step-1');
+		if ($this->access_token && $this->expires_in>=time()) {
 			return $this->access_token;
 		}
 
@@ -113,8 +112,6 @@ class Core
 		if (@$res->access_token) {
 			$this->expires_in = $res->expires_in;
 			$this->access_token = $res->access_token;
-			\Log::info('step-2');
-//			return $this->access_token;
 			return $this->{__FUNCTION__}();
 		} elseif ($res===false) {
 			return false;
@@ -128,7 +125,6 @@ class Core
 				'access_token' => $res->access_token,
 				'expires_in' => Config::timestamp()+Config::cacheExp()
 			]);
-			\Log::info('step-3');
 		}
 
 		return $res ? $this->{__FUNCTION__}() : $res;
@@ -146,7 +142,7 @@ class Core
 	{
 
 		// 内置内存获取
-		if ($this->ticket && $this->expires_in<=time()) {
+		if ($this->ticket && $this->expires_in>=time()) {
 			return $this->ticket;
 		}
 
