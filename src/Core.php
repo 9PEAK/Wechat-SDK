@@ -128,7 +128,6 @@ class Core
 			return $res ? $res->access_token : false;
 //			return $this->{__FUNCTION__}();
 		}
-		\Log::info($res);
 		return false;
 
 	}
