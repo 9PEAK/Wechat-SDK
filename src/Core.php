@@ -101,7 +101,7 @@ class Core
 	 * */
 	public function getAccessToken()
 	{
-
+/*
 		// 内置内存获取
 		if ($this->access_token && $this->expires_in>=time()) {
 			return $this->access_token;
@@ -115,18 +115,20 @@ class Core
 			return $this->{__FUNCTION__}();
 		} elseif ($res===false) {
 			return false;
-		}
+		}*/
 
 		// 接口获取: 缓存至本地
 		$url = self::URL_ACCESS_TOKEN.'appid='.Config::appId();
 		$url.= '&appsecret='.Config::appSecret();
 		if ($res=self::http($url)) {
-			self::cache([
+			$res = self::cache([
 				'access_token' => $res->access_token,
 				'expires_in' => Config::timestamp()+Config::cacheExp()
 			]);
-			return $this->{__FUNCTION__}();
+			return $res ? $res->access_token : false;
+//			return $this->{__FUNCTION__}();
 		}
+		\Log::info($res);
 		return false;
 
 	}
