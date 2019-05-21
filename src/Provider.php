@@ -13,7 +13,7 @@ trait Provider
 	{
 		switch ($app) {
 			case 'Laravel':
-				$this->app->singleton(
+				app()->singleton(
 					Core::class,
 					function () use (&$config) {
 						return new Core ($config);
