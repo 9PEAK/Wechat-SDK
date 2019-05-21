@@ -5,7 +5,7 @@ namespace Peak\SDK\Wechat;
 class Core
 {
 
-	use \Peak\Plugin\Debuger;
+	use \Peak\Plugin\Debuger\Base;
 
 
 
