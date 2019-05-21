@@ -41,7 +41,7 @@ class Core
 			return self::$cache->content(array_merge((array)$dat, (array)$key)) ?: self::debug(self::$cache->debug());
 		}
 
-		# 获取缓存
+		# 读取缓存
 		$dat = self::$cache->content();
 		if ($dat===false) {
 			return self::debug(self::$cache->debug());
@@ -61,6 +61,7 @@ class Core
 	 * */
 	protected static function http ($url, $post=null, $formData=false)
 	{
+		\Log::info(json_encode($post, JSON_UNESCAPED_UNICODE));
 		if ($post) {
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $url);
@@ -72,6 +73,7 @@ class Core
 			} else {
 				curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE));
 			}
+
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 			$res = curl_exec($curl);
 			if (curl_errno($curl)) {
@@ -445,7 +447,7 @@ class Core
 	public function setTemplateMsgContent (array &$dat, $key, $val, $color='')
 	{
 		$dat['data'][$key] = [
-			'value' => urlencode($val),
+			'value' => $val,
 			'color' => $color,
 		];
 		return $this;
