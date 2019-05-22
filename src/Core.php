@@ -41,7 +41,7 @@ class Core
 			return self::$cache->content(array_merge((array)$dat, (array)$key)) ?: self::debug(self::$cache->debug());
 		}
 
-		# 读取缓存
+		# 获取缓存
 		$dat = self::$cache->content();
 		if ($dat===false) {
 			return self::debug(self::$cache->debug());
@@ -61,7 +61,6 @@ class Core
 	 * */
 	protected static function http ($url, $post=null, $formData=false)
 	{
-		\Log::info(json_encode($post, JSON_UNESCAPED_UNICODE));
 		if ($post) {
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $url);
