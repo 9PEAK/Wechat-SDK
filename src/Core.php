@@ -28,7 +28,7 @@ class Core
 	 * @param $key mixed 默认空，表示获取所有缓存数据，否则如果$key为string，则表示获取指定key的值；如果传入的$key是数组，则表示存储数据，仅更新传入的数据。
 	 * @return mixed|false 异常时返回false，否则返回数据
 	 * */
-	private static function cache ($key=null)
+	protected static function cache ($key=null)
 	{
 		# 存储缓存
 		if (is_array($key)||is_object($key)) {
@@ -169,6 +169,8 @@ class Core
 
 	/**
 	 * 根据js临时票据创建签名
+	 * @param $url string 需要调用jssdk地前端页面
+	 * @param $ticket string 临时票据，默认null，将自动使用内部方法获取
 	 * */
 	public function signJsConfig ($url, $ticket=null)
 	{
