@@ -135,7 +135,6 @@ class Core
 
 	const URL_JS_TICKET = self::URL_API.'ticket/getticket?type=jsapi&access_token=';
 
-
 	/**
 	 * 获取js临时票据(全局)
 	 * */
@@ -158,13 +157,33 @@ class Core
 		}
 
 		// 接口获取
-		if ($res=self::http(self::URL_JS_TICKET .$this->access_token)) {
+		if ($res=self::http(self::URL_JS_TICKET.$this->getAccessToken())) {
 			$res = self::cache([
 				'ticket' => $res->ticket
 			]);
 		}
 
 		return $res ? $this->{__FUNCTION__}() : $res;
+	}
+
+
+	/**
+	 * 根据js临时票据创建签名
+	 * */
+	public function signJsConfig ($url, $ticket=null)
+	{
+		$param = [
+			'jsapi_ticket' => $ticket ?: $this->getJsTicket(),
+			'noncestr' => Config::nonceStr(),
+			'timestamp' => Config::timestamp(),
+			'url' => $url,
+		];
+
+		foreach ( $param as $k=>&$v ) {
+			$v = $k.'='.$v ;
+		}
+		$param = join ( '&' , $param ) ;
+		return sha1($param) ;
 	}
 
 
