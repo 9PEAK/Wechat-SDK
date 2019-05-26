@@ -18,10 +18,10 @@ class Core
 		Config::cachePath($config['cache_path']);
 		Config::cacheExp($config['cache_exp']);
 
-		self::$cache = new \Peak\Plugin\FileCache(Config::cacheFile());
+		self::$cache = new \Peak\Plugin\FileCache(Config::cacheFile(), 0666);
 	}
 
-	private static $cache;
+	protected static $cache;
 
 	/**
 	 * 获取/设置缓存
