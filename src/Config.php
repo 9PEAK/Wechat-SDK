@@ -57,7 +57,7 @@ class Config
 	 * */
 	static function nonceStr($val=null)
 	{
-		return self::config('nonce_str', $val) ?: self::config('nonce_str', \Peak\Plugin\Str::random(6));
+		return self::config('nonce_str', $val) ?: self::config('nonce_str', str_random(6));
 	}
 
 
