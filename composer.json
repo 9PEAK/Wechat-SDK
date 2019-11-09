@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">= 5.5",
+        "php": ">= 5.6",
         "9peak/php-plugin": "^2.0"
     },
     "require-dev": {},
