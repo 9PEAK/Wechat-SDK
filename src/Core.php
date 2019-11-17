@@ -61,27 +61,32 @@ class Core
 	 * */
 	protected static function http ($url, $post=null, $formData=false)
 	{
-		if ($post) {
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-			curl_setopt($curl, CURLOPT_POST, 1);
-			if ($formData) {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($post) ? $post : json_decode($post, 1));
-			} else {
-				curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE));
-			}
+	    try {
+            if ($post) {
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+                curl_setopt($curl, CURLOPT_POST, 1);
+                if ($formData) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($post) ? $post : json_decode($post, 1));
+                } else {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE));
+                }
 
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			$res = curl_exec($curl);
-			if (curl_errno($curl)) {
-				return self::debug('Response: '.curl_error($curl));
-			}
-			curl_close($curl);
-		} else {
-			$res = file_get_contents($url);
-		}
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                $res = curl_exec($curl);
+                if (curl_errno($curl)) {
+                    return self::debug('Response: '.curl_error($curl));
+                }
+                curl_close($curl);
+            } else {
+                $res = file_get_contents($url);
+            }
+        } catch (\Exception $e) {
+	        return self::debug($e->getMessage());
+        }
+
 
 		$res = json_decode($res);
 		return @$res->errcode ? self::debug($res) : $res;
@@ -212,7 +217,7 @@ class Core
 
 
 	/**
-	 * OAuth 授权跳转接口
+	 * 获取 OAuth 授权跳转URL
 	 * @param $scope bool $scope 默认false，基础授权，只能获取用户openid；true，则可以获取昵称、头像、性别等信息，用户未关注公众号时需要授权。
 	 * @param $state string $state 重定向后会带上state参数，企业可以填写a-zA-Z0-9的参数值
 	 * @param $callback string $callback 回调URI
@@ -230,6 +235,33 @@ class Core
 		$url.= '#wechat_redirect';
 		return $url;
 	}
+
+
+    /**
+     * 前往访问 OAuther 跳转URL
+     * @param bool $scope
+     * @param string $state
+     * @param null $callback
+     */
+    public function toOauthRedirectUrl ($scope=false, $state='9peak', $callback=null)
+    {
+        header('location: '.$this->getOauthRedirectUrl($scope, $state, $callback));
+        exit;
+    }
+
+
+    /**
+     * 前往OAuth跳转后所制定的URL
+     * @param string $url
+     */
+    public function toOauthBackUrl ($url='')
+    {
+        $url = $url ?: Config::oauthUrl();
+        header('location: '.$url);
+        exit;
+    }
+
+
 
 
 	/**
